@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_pos_pos_form_inherit_sah" model="ir.ui.view">
+        <field name="name">pos.order.form.inherit.sah</field>
+        <field name="model">pos.order</field>
+        <field name="inherit_id" ref="point_of_sale.view_pos_pos_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='lines']/list/field[@name='qty']" position="before">
+                <field name="sah_uom_id" optional="show"/>
+            </xpath>
+            <xpath expr="//field[@name='lines']/list/field[@name='qty']" position="after">
+                <field name="sah_qty_unit" optional="show"/>
+                <field name="sah_price_unit" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

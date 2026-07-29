@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_invoice_document_inherit_sah" inherit_id="account.report_invoice_document">
+        <xpath expr="//th[@name='th_quantity']" position="before">
+            <th name="th_sah_qty_unit" class="text-end"><span>Qté Unités</span></th>
+            <th name="th_sah_price_unit" class="text-end text-nowrap"><span>PU Unité</span></th>
+        </xpath>
+
+        <xpath expr="//td[@name='td_quantity']" position="before">
+            <td name="td_sah_qty_unit" class="text-end">
+                <span t-field="line.sah_qty_unit"/>
+            </td>
+            <td name="td_sah_price_unit" class="text-end text-nowrap">
+                <span t-field="line.sah_price_unit" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+            </td>
+        </xpath>
+    </template>
+</odoo>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <!-- Patch ControlButtons -->
+    <t t-inherit="point_of_sale.ControlButtons" t-inherit-mode="extension">
+        <xpath expr="//div[hasclass('control-buttons-modal')]" position="inside">
+            <button class="control-button o_uom_button" t-att-class="buttonClass" t-on-click="() => this.clickUom()">
+                <i class="fa fa-balance-scale me-1" role="img" aria-label="Change UoM" title="Change UoM" />
+                <t t-if="currentOrder?.getSelectedOrderline()?.get_sah_uom()">
+                    <t t-esc="currentOrder.getSelectedOrderline().get_sah_uom().name" />
+                </t>
+                <t t-else="">
+                    Unité
+                </t>
+            </button>
+        </xpath>
+    </t>
+
+    <!-- Patch Orderline to show Qté Unités -->
+    <t t-inherit="point_of_sale.Orderline" t-inherit-mode="extension">
+        <xpath expr="//ul[hasclass('info-list')]" position="inside">
+            <li t-if="line.sah_uom_id" class="sah-uom-info text-info">
+                <i class="fa fa-info-circle pe-1"/>
+                <t t-esc="line.getSahQtyUnit()" /> Unités au total 
+                (PU: <t t-esc="line.getSahDisplayPriceUnit()"/>)
+            </li>
+        </xpath>
+    </t>
+</templates>

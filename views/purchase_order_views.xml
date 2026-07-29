@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_purchase_order_form_inherit_sah" model="ir.ui.view">
+        <field name="name">purchase.order.form.inherit.sah</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <!-- Déplacer l'Unité AVANT la Quantité -->
+            <xpath expr="//field[@name='order_line']/list/field[@name='product_qty']" position="before">
+                <xpath expr="//field[@name='order_line']/list/field[@name='product_uom_id']" position="move"/>
+            </xpath>
+            <!-- Ajouter Qté Unités et Qté Carton APRES la Quantité -->
+            <xpath expr="//field[@name='order_line']/list/field[@name='product_qty']" position="after">
+                <field name="sah_qty_unit" optional="show"/>
+                <field name="sah_price_unit" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
