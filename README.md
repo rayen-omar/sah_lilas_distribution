@@ -37,3 +37,13 @@ Ce module a été conçu en respectant scrupuleusement les *Best Practices* de d
 3. Activez le "Mode Développeur" dans Odoo.
 4. Allez dans **Applications** > **Mise à jour de la liste des applications**.
 5. Cherchez `sah_packaging_qty` et cliquez sur **Activer**.
+
+## 📸 Aperçu
+
+### Bon de Commande (Achats)
+L'affichage dynamique avec les colonnes **Qté Unités** et **PU Unité** :
+![Aperçu Achat](docs/purchase_order.png)
+
+### Bon de Transfert (Stock)
+La conversion est également visible pour les magasiniers :
+![Aperçu Stock](docs/stock_picking.png)
