@@ -47,3 +47,7 @@ L'affichage dynamique avec les colonnes **Qté Unités** et **PU Unité** :
 ### Bon de Transfert (Stock)
 La conversion est également visible pour les magasiniers :
 ![Aperçu Stock](docs/stock_picking.png)
+
+### Rapports Imprimables (PDF)
+Les données remontent proprement sur les documents envoyés aux clients et fournisseurs :
+![Aperçu PDF](docs/report_pdf.png)
