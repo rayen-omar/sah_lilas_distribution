@@ -17,8 +17,9 @@ Tout ceci en respectant la règle d'or du projet : **Simple et 100% Natif**.
 
 ## ✨ Fonctionnalités Principales
 
-### 1. 🔄 Conversion Dynamique (Lignes de documents)
+### 1. 🔄 Conversion Dynamique & Édition (Lignes de documents)
 * **Colonnes `Qté Unités` et `PU Unité`** : Le système convertit la quantité et calcule le prix réel à l'unité de base de l'article en temps réel, évitant tout calcul mental.
+* **Édition Intuitive (On-the-fly)** : Le champ `PU Unité` est **100% modifiable**. En tapant un prix à l'unité, le module recalcule automatiquement (via fonction inverse) le prix du conditionnement global. Résultat : le sous-total de la ligne et les taxes se mettent à jour instantanément à l'écran sans aucun rafraîchissement manuel !
 * **Épuration de l'interface** : La colonne standard "Prix unitaire" d'Odoo a été masquée des tableaux pour éviter la confusion, ne laissant que le "PU Unité" visible et pertinent.
 * **Couverture Totale** : Fonctionne sur :
     * 🛒 **Ventes** (`sale.order.line`)
@@ -26,14 +27,17 @@ Tout ceci en respectant la règle d'or du projet : **Simple et 100% Natif**.
     * 📦 **Inventaire & Logistique** (`stock.move`)
     * 🧾 **Facturation** (`account.move.line`)
 
-### 2. 💰 Totaux Globaux (Bas des documents)
-* **Total Remise** : Calcule et affiche la somme financière exacte des remises appliquées sur toutes les lignes.
-* **FODEC (1%)** : Calcule et affiche la taxe FODEC basée sur le total Hors Taxes.
-* Affichage clair, natif, et présent même si la valeur est de 0 pour une totale transparence.
-* **Couverture** : Ventes, Achats et Factures.
+### 2. 💰 Totaux Globaux & Tri Personnalisé (Bas des documents)
+Le module recalcule et affiche les totaux dans un ordre parfaitement logique et transparent (que ce soit à l'écran ou sur PDF) :
+1. **Montant hors taxes**
+2. **Total Remise** (Somme financière exacte des remises appliquées sur toutes les lignes)
+3. **FODEC (1%)** (Taxe calculée automatiquement sur le total HT)
+4. **Taxes**
+5. **Total**
+* *Couverture* : Ventes, Achats et Factures.
 
 ### 3. 🧾 Impressions PDF (Rapports)
-Les rapports imprimables ont été surchargés (via `xpath`) pour inclure ces nouvelles colonnes (`Qté Unités` et `PU Unité`) afin que les clients et fournisseurs aient la même lisibilité.
+Les rapports imprimables ont été méticuleusement surchargés (via `xpath`) pour inclure l'ordre exact des totaux et les nouvelles colonnes (`Qté Unités` et `PU Unité`), afin que les clients et fournisseurs aient la même lisibilité que l'équipe en interne.
 Les modules et vues (QWeb) qui ont été modifiés sont exactement :
 - **Achats** (`purchase`) : Modification de la vue `purchase.report_purchaseorder_document` (Bon de Commande).
 - **Facturation** (`account`) : Modification de la vue `account.report_invoice_document` (Facture).
@@ -51,11 +55,11 @@ Ce module a été codé pour être le plus léger, robuste et maintenable possib
 
 ### Les 2 "Mixins" (Le cœur du moteur)
 Plutôt que de dupliquer des lignes de code dans tous les modèles, la logique mathématique est centralisée dans deux boîtes à outils (Mixins) :
-1. **`sah.packaging.mixin`** : S'occupe de la conversion mathématique des quantités et des prix. Il est hérité par toutes les lignes (`sale.order.line`, `purchase.order.line`, `stock.move`, `account.move.line`, `pos.order.line`).
+1. **`sah.packaging.mixin`** : S'occupe de la conversion mathématique des quantités et des prix, incluant l'ingénieux calcul `inverse` et `onchange` pour l'édition en temps réel. Il est hérité par toutes les lignes (`sale.order.line`, `purchase.order.line`, `stock.move`, `account.move.line`, `pos.order.line`).
 2. **`sah.totals.mixin`** : S'occupe de boucler sur les lignes pour extraire la remise financière totale et calculer le FODEC. Il est hérité par les documents maîtres (`sale.order`, `purchase.order`, `account.move`).
 
 ### Adaptations Odoo 19
-Le code prend en charge les spécificités des dernières versions d'Odoo, comme l'utilisation intelligente des "Compute Fields" (`sah_actual_qty`) pour contourner les restrictions Read-Only de l'ORM, et la gestion du nouveau système de notes/sections (`display_type = 'product'`).
+Le code prend en charge les spécificités des dernières versions d'Odoo, comme l'utilisation intelligente des "Compute Fields" pour contourner les restrictions Read-Only de l'ORM, et la gestion du nouveau système de notes/sections (`display_type = 'product'`).
 
 ---
 
