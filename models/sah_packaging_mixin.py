@@ -57,13 +57,6 @@ class SahPackagingMixin(models.AbstractModel):
                     record.sah_price_unit = price / qty_ratio
 
     def _inverse_sah_price_unit(self):
-        self._update_sah_price()
-
-    @api.onchange('sah_price_unit')
-    def _onchange_sah_price_unit(self):
-        self._update_sah_price()
-
-    def _update_sah_price(self):
         for record in self:
             if 'display_type' in record._fields and record.display_type in ('line_section', 'line_note'):
                 continue
@@ -80,3 +73,8 @@ class SahPackagingMixin(models.AbstractModel):
                 # Ex: on tape 10$ à l'unité, pour un pack de 6. Le prix_unit du pack devient 60$.
                 new_price = record.sah_price_unit * qty_ratio
                 setattr(record, record._sah_price_field, new_price)
+
+    @api.onchange('sah_price_unit')
+    def _onchange_sah_price_unit(self):
+        # UI instant feedback
+        self._inverse_sah_price_unit()
