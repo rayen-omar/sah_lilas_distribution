@@ -36,8 +36,15 @@ Le module recalcule et affiche les totaux dans un ordre parfaitement logique et 
 5. **Total**
 * *Couverture* : Ventes, Achats et Factures.
 
+**Aperçu de l'interface (Bon de commande avec édition PU Unité et Totaux) :**
+![Capture d'écran de l'interface Odoo](static/description/ui_screenshot.png)
+
 ### 3. 🧾 Impressions PDF (Rapports)
 Les rapports imprimables ont été méticuleusement surchargés (via `xpath`) pour inclure l'ordre exact des totaux et les nouvelles colonnes (`Qté Unités` et `PU Unité`), afin que les clients et fournisseurs aient la même lisibilité que l'équipe en interne.
+
+**Aperçu du Rapport PDF (Totaux et Colonnes personnalisées) :**
+![Capture d'écran du Rapport PDF](static/description/pdf_screenshot.png)
+
 Les modules et vues (QWeb) qui ont été modifiés sont exactement :
 - **Achats** (`purchase`) : Modification de la vue `purchase.report_purchaseorder_document` (Bon de Commande).
 - **Facturation** (`account`) : Modification de la vue `account.report_invoice_document` (Facture).
