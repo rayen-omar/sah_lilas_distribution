@@ -15,6 +15,7 @@ class SahPackagingMixin(models.AbstractModel):
         string="PU Unité",
         compute='_compute_sah_packaging_values',
         store=False,
+        readonly=False,
         digits='Product Price'
     )
 
