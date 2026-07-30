@@ -11,9 +11,16 @@ class PosOrderLine(models.Model):
         help="Unité choisie dans le Point de Vente"
     )
 
-    def _sah_get_qty_uom_price(self):
-        self.ensure_one()
-        # In POS, product_uom_id doesn't exist natively. We use our custom sah_uom_id if set,
-        # otherwise we fallback to the product's base uom
-        uom = self.sah_uom_id if self.sah_uom_id else self.product_id.uom_id
-        return self.qty, uom, self.price_unit, self.product_id
+    _sah_qty_field = 'qty'
+    _sah_uom_field = 'sah_actual_uom_id'
+
+    sah_actual_uom_id = fields.Many2one('uom.uom', compute='_compute_sah_actual_uom_id')
+
+    @api.depends('sah_uom_id', 'product_id.uom_id')
+    def _compute_sah_actual_uom_id(self):
+        for record in self:
+            record.sah_actual_uom_id = record.sah_uom_id or record.product_id.uom_id
+
+    @api.depends('qty', 'sah_actual_uom_id', 'price_unit', 'product_id')
+    def _compute_sah_packaging_values(self):
+        super()._compute_sah_packaging_values()

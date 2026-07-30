@@ -12,6 +12,19 @@
                 <field name="sah_qty_unit" optional="show"/>
                 <field name="sah_price_unit" optional="show"/>
             </xpath>
+            <xpath expr="//field[@name='invoice_line_ids']/list/field[@name='price_unit']" position="attributes">
+                <attribute name="column_invisible">True</attribute>
+            </xpath>
+            <xpath expr="//field[@name='tax_totals']" position="replace">
+                <field name="amount_untaxed" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                <field name="sah_total_discount" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                <field name="sah_total_fodec" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                <field name="amount_tax" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                <div class="oe_subtotal_footer_separator oe_inline o_td_label">
+                    <label for="amount_total"/>
+                </div>
+                <field name="amount_total" nolabel="1" class="oe_subtotal_footer_separator" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+            </xpath>
         </field>
     </record>
 </odoo>

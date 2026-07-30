@@ -14,5 +14,47 @@
                 <span t-field="line.sah_price_unit" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
             </td>
         </xpath>
+
+        <!-- Masquer le prix unitaire standard d'Odoo -->
+        <xpath expr="//th[@name='th_priceunit']" position="attributes">
+            <attribute name="t-if">False</attribute>
+        </xpath>
+        <xpath expr="//td[@name='td_price_unit']" position="attributes">
+            <attribute name="t-if">False</attribute>
+        </xpath>
+
+        <!-- Ajouter la liste complète des totaux dans l'ordre exact demandé -->
+        <xpath expr="//t[@t-call='account.document_tax_totals']" position="replace">
+            <tr class="border-black o_subtotal">
+                <td><strong>Montant hors taxes</strong></td>
+                <td class="text-end">
+                    <span t-field="o.amount_untaxed" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                </td>
+            </tr>
+            <tr>
+                <td><strong>Total Remise</strong></td>
+                <td class="text-end">
+                    <span t-field="o.sah_total_discount" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                </td>
+            </tr>
+            <tr>
+                <td><strong>FODEC (1%)</strong></td>
+                <td class="text-end">
+                    <span t-field="o.sah_total_fodec" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                </td>
+            </tr>
+            <tr>
+                <td><strong>Taxes</strong></td>
+                <td class="text-end">
+                    <span t-field="o.amount_tax" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                </td>
+            </tr>
+            <tr class="border-black o_total">
+                <td><strong>Total</strong></td>
+                <td class="text-end">
+                    <span t-field="o.amount_total" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                </td>
+            </tr>
+        </xpath>
     </template>
 </odoo>

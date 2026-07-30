@@ -10,7 +10,6 @@
             </xpath>
             <xpath expr="//field[@name='move_ids']/list/field[@name='quantity']" position="after">
                 <field name="sah_qty_unit" optional="show"/>
-                <field name="sah_price_unit" optional="show"/>
             </xpath>
         </field>
     </record>

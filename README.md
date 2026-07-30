@@ -1,4 +1,4 @@
-# 📦 SAH Lilas Distribution - Gestion Avancée des Conditionnements
+# 📦 SAH Lilas Distribution - Gestion Avancée des Conditionnements & Totaux
 
 ![Odoo Version](https://img.shields.io/badge/Odoo-19.0-purple?style=for-the-badge&logo=odoo)
 ![Python](https://img.shields.io/badge/Python-3.10+-blue?style=for-the-badge&logo=python)
@@ -6,48 +6,62 @@
 
 ## 📖 À propos
 
-**SAH Lilas Distribution** optimise la gestion des conditionnements dans Odoo 19. Le module affiche automatiquement la quantité en unités de base et le vrai prix unitaire sur l'ensemble de l'ERP (Ventes, Achats, Stocks) et permet aux caissiers du Point de Vente (POS) de basculer l'unité de vente à la volée.
+**SAH Lilas Distribution** est un module Odoo 19 sur-mesure dont l'objectif est d'optimiser l'expérience utilisateur et la fiabilité des données dans un environnement de vente et distribution. 
+Il apporte deux grands axes d'améliorations :
+1. **Une lecture sans erreur des quantités et prix** : Affiche automatiquement les quantités réelles en Unités de base, peu importe l'emballage sélectionné (Pack, Carton).
+2. **Une transparence des totaux financiers** : Affiche systématiquement le Total des Remises accordées et la taxe FODEC (1%) au bas de tous les documents commerciaux.
 
-Dans un environnement de distribution où les produits sont manipulés sous différentes unités de mesure (Packs, Cartons, Palettes), il est crucial d'éviter les erreurs de calcul mental. Ce module harmonise l'affichage de l'ensemble de l'ERP en fournissant des données fiables et claires en temps réel.
+Tout ceci en respectant la règle d'or du projet : **Simple et 100% Natif**.
+
+---
 
 ## ✨ Fonctionnalités Principales
 
-* **Conversion Dynamique (Backend)** : Ajout automatique des colonnes `Qté Unités` et `PU Unité` sur les lignes de documents. Le système convertit la quantité et le prix du conditionnement choisi vers l'unité de base du produit.
-* **Couverture Totale de l'ERP** : Fonctionnalité implémentée de bout-en-bout sur :
-    * 🛒 **Ventes** (`sale.order`)
-    * 🤝 **Achats** (`purchase.order`)
-    * 📦 **Inventaire & Logistique** (`stock.picking`)
-    * 🧾 **Facturation** (`account.move`)
-* **Transparence Documentaire (Rapports PDF)** : Modification des rapports imprimables (Devis, Factures, Bons de réception) pour inclure ces données cruciales pour les clients et fournisseurs.
-* **Point de Vente Augmenté (POS)** :
-    * Interface tactile enrichie d'un bouton "Balance" pour switcher l'unité de vente à la volée (ex: basculer de "Unité" à "Pack de 6").
-    * Affichage en temps réel de la `Qté Unités` et du `PU Unité` directement dans le panier (Ticket POS) de la caisse.
+### 1. 🔄 Conversion Dynamique (Lignes de documents)
+* **Colonnes `Qté Unités` et `PU Unité`** : Le système convertit la quantité et calcule le prix réel à l'unité de base de l'article en temps réel, évitant tout calcul mental.
+* **Épuration de l'interface** : La colonne standard "Prix unitaire" d'Odoo a été masquée des tableaux pour éviter la confusion, ne laissant que le "PU Unité" visible et pertinent.
+* **Couverture Totale** : Fonctionne sur :
+    * 🛒 **Ventes** (`sale.order.line`)
+    * 🤝 **Achats** (`purchase.order.line`)
+    * 📦 **Inventaire & Logistique** (`stock.move`)
+    * 🧾 **Facturation** (`account.move.line`)
 
-## 🛠️ Architecture Technique
+### 2. 💰 Totaux Globaux (Bas des documents)
+* **Total Remise** : Calcule et affiche la somme financière exacte des remises appliquées sur toutes les lignes.
+* **FODEC (1%)** : Calcule et affiche la taxe FODEC basée sur le total Hors Taxes.
+* Affichage clair, natif, et présent même si la valeur est de 0 pour une totale transparence.
+* **Couverture** : Ventes, Achats et Factures.
 
-Ce module a été conçu en respectant scrupuleusement les *Best Practices* de développement Odoo :
+### 3. 🧾 Impressions PDF (Rapports)
+Les rapports imprimables ont été surchargés (via `xpath`) pour inclure ces nouvelles colonnes (`Qté Unités` et `PU Unité`) afin que les clients et fournisseurs aient la même lisibilité.
+Les modules et vues (QWeb) qui ont été modifiés sont exactement :
+- **Achats** (`purchase`) : Modification de la vue `purchase.report_purchaseorder_document` (Bon de Commande).
+- **Facturation** (`account`) : Modification de la vue `account.report_invoice_document` (Facture).
+- **Stocks** (`stock`) : Modification de la vue `stock.report_delivery_document` (Bon de Livraison).
 
-* **DRY (Don't Repeat Yourself)** : La logique de conversion mathématique est centralisée dans un modèle abstrait (`sah.packaging.mixin`). Les modèles Odoo (Achats, Ventes, Factures, Stock) héritent simplement de ce Mixin, garantissant un code propre et hautement maintenable.
-* **OWL (Odoo Web Library) Patching** : Le frontend du Point de Vente (POS) a été modifié en utilisant la méthode native `patch()` d'Odoo 19 sur `PosOrderline` et `ControlButtons`. Cela assure une compatibilité parfaite et d'excellentes performances sans modifier le noyau d'Odoo.
+### 4. 💻 Caisse Tactile (Point de Vente - POS)
+* **Bouton "Unité" sur la caisse** : Permet aux caissiers de changer l'unité de vente (ex: passer de "Unité" à "Pack de 6") à la volée via un popup tactile.
+* **Ticket virtuel** : Affiche le "PU Unité" et la "Qté Unités" en direct dans le panier client du Point de Vente.
 
-## 🚀 Installation
+---
 
-1. Clonez ce repository dans votre dossier d'addons Odoo.
-2. Redémarrez votre service Odoo.
-3. Activez le "Mode Développeur" dans Odoo.
-4. Allez dans **Applications** > **Mise à jour de la liste des applications**.
-5. Cherchez `sah_packaging_qty` et cliquez sur **Activer**.
+## 🛠️ Architecture Technique & "Best Practices"
 
-## 📸 Aperçu
+Ce module a été codé pour être le plus léger, robuste et maintenable possible, en suivant strictement l'architecture standard d'Odoo ("1 modèle = 1 fichier") et le principe **DRY (Don't Repeat Yourself)**.
 
-### Bon de Commande (Achats)
-L'affichage dynamique avec les colonnes **Qté Unités** et **PU Unité** :
-![Aperçu Achat](docs/purchase_order.png)
+### Les 2 "Mixins" (Le cœur du moteur)
+Plutôt que de dupliquer des lignes de code dans tous les modèles, la logique mathématique est centralisée dans deux boîtes à outils (Mixins) :
+1. **`sah.packaging.mixin`** : S'occupe de la conversion mathématique des quantités et des prix. Il est hérité par toutes les lignes (`sale.order.line`, `purchase.order.line`, `stock.move`, `account.move.line`, `pos.order.line`).
+2. **`sah.totals.mixin`** : S'occupe de boucler sur les lignes pour extraire la remise financière totale et calculer le FODEC. Il est hérité par les documents maîtres (`sale.order`, `purchase.order`, `account.move`).
 
-### Bon de Transfert (Stock)
-La conversion est également visible pour les magasiniers :
-![Aperçu Stock](docs/stock_picking.png)
+### Adaptations Odoo 19
+Le code prend en charge les spécificités des dernières versions d'Odoo, comme l'utilisation intelligente des "Compute Fields" (`sah_actual_qty`) pour contourner les restrictions Read-Only de l'ORM, et la gestion du nouveau système de notes/sections (`display_type = 'product'`).
 
-### Rapports Imprimables (PDF)
-Les données remontent proprement sur les documents envoyés aux clients et fournisseurs :
-![Aperçu PDF](docs/report_pdf.png)
+---
+
+## 🚀 Installation & Utilisation
+
+1. Placez le dossier `sah_packaging_qty` dans votre répertoire d'addons.
+2. Redémarrez le service Odoo.
+3. Mettez à jour la liste des applications et installez/mettez à jour le module.
+4. **Note pour les Ventes :** Assurez-vous d'avoir coché "Remises (Accorder des remises sur les lignes de commande)" dans *Configuration > Ventes > Tarification* pour voir apparaître les remises !

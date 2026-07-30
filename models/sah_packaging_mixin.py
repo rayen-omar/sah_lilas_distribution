@@ -18,45 +18,38 @@ class SahPackagingMixin(models.AbstractModel):
         digits='Product Price'
     )
 
-    def _sah_get_qty_uom_price(self):
-        """
-        Méthode abstraite à surcharger par les modèles héritant de ce mixin.
-        Doit retourner un tuple: (qty, uom, price_unit, product)
-        """
-        self.ensure_one()
-        return (0.0, self.env['uom.uom'], 0.0, self.env['product.product'])
+    # Propriétés de mapping par défaut (à surcharger dans les modèles enfants si nécessaire)
+    _sah_qty_field = 'product_uom_qty'
+    _sah_uom_field = 'product_uom_id'
+    _sah_price_field = 'price_unit'
 
-    @api.depends_context('lang')
+    # Note: Le décorateur @api.depends est défini dans les modèles enfants
     def _compute_sah_packaging_values(self):
         for record in self:
-            # Valeurs par défaut
             record.sah_qty_unit = 0.0
             record.sah_price_unit = 0.0
 
-            # Gestion des lignes section/note (display_type)
-            if 'display_type' in record._fields and record.display_type:
+            if 'display_type' in record._fields and record.display_type in ('line_section', 'line_note'):
                 continue
 
-            # Récupération des données via la méthode abstraite
-            try:
-                qty, uom, price_unit, product = record._sah_get_qty_uom_price()
-            except Exception:
+            product = record.product_id
+            if not product:
                 continue
 
-            if not product or not product.uom_id or not uom:
+            qty = getattr(record, record._sah_qty_field, 0.0)
+            uom = getattr(record, record._sah_uom_field, False)
+            price = getattr(record, record._sah_price_field, 0.0)
+
+            if not uom or not product.uom_id:
                 continue
 
-            # sah_qty_unit: quantité convertie de l'unité de la ligne vers l'unité de base du produit
-            qty_unit = uom._compute_quantity(qty, product.uom_id, round=False)
-            record.sah_qty_unit = qty_unit
+            # Conversion de la quantité
+            record.sah_qty_unit = uom._compute_quantity(qty, product.uom_id, round=False)
 
-            # sah_price_unit: prix unitaire de la ligne converti vers le prix à l'unité de base du produit
-            # Si uom > product.uom_id (ex: Carton de 10 > Unité) -> le prix unitaire doit être divisé
-            # Odoo _compute_price fait ça: uom._compute_price(price_unit, product.uom_id)
+            # Conversion du prix unitaire
             if hasattr(uom, '_compute_price'):
-                record.sah_price_unit = uom._compute_price(price_unit, product.uom_id)
+                record.sah_price_unit = uom._compute_price(price, product.uom_id)
             else:
-                # Fallback manuel si _compute_price n'existe plus (bien qu'il existe normalement)
                 qty_ratio = uom._compute_quantity(1.0, product.uom_id, round=False)
                 if qty_ratio:
-                    record.sah_price_unit = price_unit / qty_ratio
+                    record.sah_price_unit = price / qty_ratio

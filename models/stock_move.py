@@ -1,21 +1,22 @@
 # -*- coding: utf-8 -*-
-from odoo import api, models
+from odoo import api, fields, models
 
 class StockMove(models.Model):
     _name = 'stock.move'
     _inherit = ['stock.move', 'sah.packaging.mixin']
 
-    def _sah_get_qty_uom_price(self):
-        self.ensure_one()
-        # Dans un mouvement de stock, qty peut être quantity (fait) ou product_uom_qty (demande)
-        # On priorise quantity si elle est supérieure à 0 ou si on est en train de la saisir, sinon product_uom_qty
-        qty = self.quantity if ('quantity' in self._fields and self.quantity) else self.product_uom_qty
-        # Odoo 19: uom est product_uom_id ou product_uom
-        uom = self.product_uom_id if 'product_uom_id' in self._fields else self.product_uom
-        price_unit = 0.0 # Pas de prix sur les mouvements de stock simples par défaut
-        product = self.product_id
-        return (qty, uom, price_unit, product)
+    # Dans un mouvement de stock on priorise la quantité sélectionnée.
+    # Pour simplifier avec le mixin, on peut utiliser product_uom_qty par défaut
+    # car 'quantity' est souvent le fallback
+    _sah_qty_field = 'sah_actual_qty'
 
-    @api.depends('product_uom_qty', 'quantity', 'product_uom', 'product_id')
+    sah_actual_qty = fields.Float(compute='_compute_sah_actual_qty')
+
+    @api.depends('product_uom_qty', 'quantity')
+    def _compute_sah_actual_qty(self):
+        for record in self:
+            record.sah_actual_qty = record.quantity if ('quantity' in record._fields and record.quantity) else record.product_uom_qty
+
+    @api.depends('sah_actual_qty', 'product_uom', 'product_id')
     def _compute_sah_packaging_values(self):
         super()._compute_sah_packaging_values()

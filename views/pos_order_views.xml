@@ -12,6 +12,9 @@
                 <field name="sah_qty_unit" optional="show"/>
                 <field name="sah_price_unit" optional="show"/>
             </xpath>
+            <xpath expr="//field[@name='lines']/list/field[@name='price_unit']" position="attributes">
+                <attribute name="column_invisible">True</attribute>
+            </xpath>
         </field>
     </record>
 </odoo>
